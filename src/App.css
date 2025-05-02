@@ -1,0 +1,123 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  background-color: #282c34;
+  color: white;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.form-switcher {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.switch-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #3a3f4b;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.switch-button.active {
+  background-color: #61dafb;
+  color: #282c34;
+}
+
+.registration-form-container,
+.login-form-container {
+  max-width: 400px;
+  width: 100%;
+  padding: 20px;
+  background-color: #3a3f4b;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.registration-form,
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-group {
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+}
+
+input.error-input {
+  border-color: #ff6b6b;
+}
+
+.error {
+  color: #ff6b6b;
+  font-size: 0.8em;
+  margin-top: 5px;
+  display: block;
+}
+
+.error-message {
+  color: #ff6b6b;
+  background-color: rgba(255, 107, 107, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+button {
+  background-color: #61dafb;
+  color: #282c34;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+button:hover:not(:disabled) {
+  background-color: #4fa8c7;
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.success-message {
+  background-color: #4caf50;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.loading {
+  opacity: 0.7;
+  pointer-events: none;
+} 
