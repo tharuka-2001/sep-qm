@@ -1,39 +1,77 @@
-# Test Automation Demo with Cypress
+# React Authentication Demo
 
-This project demonstrates test automation using Cypress with a React application. It includes a user registration form and automated tests to validate its functionality.
+A React application demonstrating user authentication with login and registration functionality.
+
+## Features
+
+- User Registration
+  - Username validation
+  - Email validation
+  - Password confirmation
+  - Real-time feedback
+
+- User Login
+  - Secure authentication
+  - Error handling
+  - Success messages
+
+- Testing
+  - Cypress E2E tests
+  - Functional tests
+  - UI tests
+  - API tests
+
+## Getting Started
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm start
+   ```
+4. Run the tests:
+   ```bash
+   npm test
+   ```
 
 ## Project Structure
 
-- `src/App.js` - Main React application with registration form
-- `src/App.css` - Styling for the application
-- `cypress/e2e/registration.cy.js` - Cypress test cases
-- `cypress.config.js` - Cypress configuration
+```
+src/
+  ├── components/
+  │   ├── Login.js
+  │   └── Register.js
+  ├── services/
+  │   └── api.js
+  ├── App.js
+  └── App.css
 
-## Setup Instructions
-
-1. Install dependencies:
-```bash
-npm install
+cypress/
+  └── e2e/
+      ├── login.cy.js
+      ├── registration.cy.js
+      ├── functional.cy.js
+      ├── ui.cy.js
+      └── api.cy.js
 ```
 
-2. Start the development server:
-```bash
-npm start
-```
+## Testing
 
-3. In a new terminal, run Cypress:
-```bash
-npm test
-```
+The project includes comprehensive test coverage:
 
-## Test Cases
+- **Functional Tests**: Test form validation and submission
+- **UI Tests**: Verify styling and layout
+- **API Tests**: Mock API responses and error handling
 
-The Cypress tests cover the following scenarios:
-- Form display validation
-- Empty form submission
-- Password mismatch validation
-- Successful form submission
-- Email format validation
+## Technologies Used
+
+- React
+- Cypress
+- CSS3
+- JavaScript (ES6+)
 
 ## Test Automation Report
 
