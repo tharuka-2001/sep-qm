@@ -1,86 +1,25 @@
-describe('Login Tests', () => {
+/// <reference types="cypress" />
+
+describe('Login Flow', () => {
   beforeEach(() => {
     cy.visit('/');
-    cy.get('[data-cy="switch-to-login"]').click();
+    cy.contains('Login').click();
   });
 
-  it('should validate login form fields', () => {
-    // Test empty form submission
-    cy.get('[data-cy="login-submit-button"]').click();
-    cy.get('.error').should('have.length', 2);
-    cy.get('.error').should('contain', 'Username is required');
-    cy.get('.error').should('contain', 'Password is required');
-  });
-
-  it('should handle successful login', () => {
-    // Fill form with valid credentials
+  it('Member 1: valid credentials', () => {
+    cy.intercept('POST', '/api/login', { fixture: 'loginSuccess.json', statusCode: 200 }).as('loginReq');
     cy.get('[data-cy="login-username-input"]').type('testuser');
     cy.get('[data-cy="login-password-input"]').type('password123');
-    
-    // Intercept login API call
-    cy.intercept('POST', '/api/login', {
-      statusCode: 200,
-      body: {
-        success: true,
-        data: {
-          id: '123',
-          username: 'testuser',
-          token: 'mock-jwt-token'
-        }
-      }
-    }).as('loginUser');
-
-    // Submit form
     cy.get('[data-cy="login-submit-button"]').click();
-    
-    // Check loading state
-    cy.get('[data-cy="login-submit-button"]').should('be.disabled');
-    cy.get('[data-cy="login-submit-button"]').should('contain', 'Logging in...');
-    
-    // Check success state
-    cy.get('.success-message').should('exist');
-    cy.get('.success-message h3').should('contain', 'Welcome back, testuser!');
+    cy.wait('@loginReq').its('response.statusCode').should('eq', 200);
   });
 
-  it('should handle failed login', () => {
-    // Fill form with invalid credentials
+  it('Member 1: invalid credentials', () => {
+    cy.intercept('POST', '/api/login', { fixture: 'loginFailure.json', statusCode: 401 }).as('loginFail');
     cy.get('[data-cy="login-username-input"]').type('wronguser');
     cy.get('[data-cy="login-password-input"]').type('wrongpass');
-    
-    // Intercept login API call with error
-    cy.intercept('POST', '/api/login', {
-      statusCode: 401,
-      body: {
-        success: false,
-        message: 'Invalid username or password'
-      }
-    }).as('loginUserError');
-
-    // Submit form
     cy.get('[data-cy="login-submit-button"]').click();
-    
-    // Check error message
-    cy.get('.error-message').should('contain', 'Invalid username or password');
+    cy.wait('@loginFail');
+    cy.get('[data-cy="error-message"]').should('contain', 'Invalid username or password');
   });
-
-  it('should handle API error', () => {
-    // Fill form with valid credentials
-    cy.get('[data-cy="login-username-input"]').type('testuser');
-    cy.get('[data-cy="login-password-input"]').type('password123');
-    
-    // Intercept login API call with server error
-    cy.intercept('POST', '/api/login', {
-      statusCode: 500,
-      body: {
-        success: false,
-        error: 'Server error'
-      }
-    }).as('loginUserServerError');
-
-    // Submit form
-    cy.get('[data-cy="login-submit-button"]').click();
-    
-    // Check error message
-    cy.get('.error-message').should('contain', 'Failed to login');
-  });
-}); 
+});

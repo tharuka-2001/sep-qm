@@ -1,99 +1,87 @@
 import React, { useState } from 'react';
-import { loginUser } from '../services/api';
+import { Link } from 'react-router-dom';
 
-function Login() {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: ''
-  });
+export default function Login() {
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+  const handleChange = e =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.username) newErrors.username = 'Username is required';
-    if (!formData.password) newErrors.password = 'Password is required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    if (validateForm()) {
-      setIsLoading(true);
-      try {
-        const response = await loginUser(formData);
-        if (response.success) {
-          setIsLoggedIn(true);
-        } else {
-          setErrors({ submit: response.message || 'Invalid credentials' });
-        }
-      } catch (error) {
-        setErrors({ submit: 'Failed to login. Please try again.' });
-      } finally {
-        setIsLoading(false);
+    setIsLoading(true);
+    setErrors({});
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const json = await res.json();
+      if (!json.success) {
+        setErrors({ general: json.message });
+      } else {
+        setUser(json.data);
       }
+    } catch (err) {
+      setErrors({ general: err.message || 'Login failed' });
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  if (user) {
+    return (
+      <div className="auth-card">
+        <h2>Welcome, {user.username}!</h2>
+      </div>
+    );
+  }
+
   return (
-    <div className="login-form-container">
-      <h2>Login</h2>
-      {isLoggedIn ? (
-        <div className="success-message">
-          <h3>Welcome back, {formData.username}!</h3>
-          <p>You have successfully logged in.</p>
+    <div className="auth-card">
+      <div className="auth-header">
+        <button className="active">Login</button>
+        <Link to="/register"><button>Register</button></Link>
+      </div>
+
+      <form onSubmit={handleSubmit}>
+        {errors.general && (
+          <p style={{ color: 'tomato', marginBottom: '1rem' }} data-cy="error-message">
+            {errors.general}
+          </p>
+        )}
+        <div className="form-group">
+          <label>Username</label>
+          <input
+            name="username"
+            data-cy="login-username-input"
+            value={formData.username}
+            onChange={handleChange}
+          />
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="login-username">Username:</label>
-            <input
-              type="text"
-              id="login-username"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              data-cy="login-username-input"
-            />
-            {errors.username && <span className="error">{errors.username}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="login-password">Password:</label>
-            <input
-              type="password"
-              id="login-password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              data-cy="login-password-input"
-            />
-            {errors.password && <span className="error">{errors.password}</span>}
-          </div>
-
-          {errors.submit && <div className="error-message">{errors.submit}</div>}
-
-          <button 
-            type="submit" 
-            data-cy="login-submit-button"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-      )}
+        <div className="form-group">
+          <label>Password</label>
+          <input
+            name="password"
+            type="password"
+            data-cy="login-password-input"
+            value={formData.password}
+            onChange={handleChange}
+          />
+        </div>
+        <button
+          type="submit"
+          className="submit-button"
+          data-cy="login-submit-button"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Logging in…' : 'Login'}
+        </button>
+      </form>
     </div>
   );
 }
-
-export default Login; 
