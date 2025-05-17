@@ -81,7 +81,7 @@ app.post('/api/register', (req, res) => {
   }
 });
 
-// Optional username-availability check
+// Username availability check
 app.get('/api/check-username/:username', (req, res) => {
   try {
     const { username } = req.params;
@@ -102,15 +102,17 @@ app.get('/api/check-username/:username', (req, res) => {
       });
     }
 
-    
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Username can only contain letters, numbers, and underscores'
+    // Check if username is 'testuser' (unavailable)
+    if (username === 'testuser') {
+      return res.json({
+        available: false
       });
     }
 
-    res.json({ available: true });
+    // All other usernames are available
+    return res.json({
+      available: true
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

@@ -13,6 +13,12 @@ describe('API Tests', () => {
       fixture: 'registerSuccess.json',
       statusCode: 200
     }).as('registerReq');
+
+    // Ensure we're on the correct page before each test
+    cy.visit('http://localhost:3000', {
+      failOnStatusCode: false,
+      timeout: 10000
+    });
   });
 
   it('should handle username availability API calls', () => {
@@ -41,5 +47,149 @@ describe('API Tests', () => {
     cy.wait('@registerReq').its('response.statusCode').should('eq', 200);
 
     // No need for cy.contains(...) here since we asserted the alert above
+  });
+
+  // Login Tests
+  describe('Login API', () => {
+    it('should handle valid login credentials', () => {
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:5000/api/login',
+        body: {
+          username: 'testuser',
+          password: 'password123'
+        }
+      }).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.have.property('success', true);
+        expect(response.body.data).to.have.property('token');
+      });
+    });
+
+    it('should handle invalid login credentials', () => {
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:5000/api/login',
+        body: {
+          username: 'wronguser',
+          password: 'wrongpass'
+        },
+        failOnStatusCode: false
+      }).then((response) => {
+        expect(response.status).to.eq(401);
+        expect(response.body).to.have.property('success', false);
+        expect(response.body).to.have.property('message', 'Invalid username or password');
+      });
+    });
+
+    it('should handle missing credentials', () => {
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:5000/api/login',
+        body: {},
+        failOnStatusCode: false
+      }).then((response) => {
+        expect(response.status).to.eq(400);
+        expect(response.body).to.have.property('success', false);
+      });
+    });
+  });
+
+  // Registration Tests
+  describe('Registration API', () => {
+    it('should handle valid registration data', () => {
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:5000/api/register',
+        body: {
+          username: 'newuser',
+          email: 'new@example.com',
+          password: 'password123'
+        }
+      }).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.have.property('success', true);
+        expect(response.body).to.have.property('message', 'Registration successful! Please login.');
+      });
+    });
+
+    it('should handle invalid email format', () => {
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:5000/api/register',
+        body: {
+          username: 'newuser',
+          email: 'invalid-email',
+          password: 'password123'
+        },
+        failOnStatusCode: false
+      }).then((response) => {
+        expect(response.status).to.eq(400);
+        expect(response.body).to.have.property('success', false);
+      });
+    });
+
+    it('should handle short password', () => {
+      cy.request({
+        method: 'POST',
+        url: 'http://localhost:5000/api/register',
+        body: {
+          username: 'newuser',
+          email: 'new@example.com',
+          password: '123'
+        },
+        failOnStatusCode: false
+      }).then((response) => {
+        expect(response.status).to.eq(400);
+        expect(response.body).to.have.property('success', false);
+      });
+    });
+  });
+
+  // Username Availability Tests
+  describe('Username Availability API', () => {
+    it('should check available username', () => {
+      // First ensure the page is loaded
+      cy.url().should('not.include', 'about:blank');
+      
+      cy.request({
+        method: 'GET',
+        url: 'http://localhost:5000/api/check-username/newuser',
+        failOnStatusCode: false
+      }).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body).to.have.property('available', true);
+      });
+    });
+
+    it('should check unavailable username', () => {
+      // First ensure the page is loaded
+      cy.url().should('not.include', 'about:blank');
+      
+      cy.request({
+        method: 'GET',
+        url: 'http://localhost:5000/api/check-username/testuser',
+        failOnStatusCode: false
+      }).then((response) => {
+        // Log the response for debugging
+        cy.log('Response:', response.body);
+        expect(response.status).to.eq(200);
+        expect(response.body).to.have.property('available', false);
+      });
+    });
+
+    it('should handle invalid username format', () => {
+      // First ensure the page is loaded
+      cy.url().should('not.include', 'about:blank');
+      
+      cy.request({
+        method: 'GET',
+        url: 'http://localhost:5000/api/check-username/a',
+        failOnStatusCode: false
+      }).then((response) => {
+        expect(response.status).to.eq(400);
+        expect(response.body).to.have.property('success', false);
+      });
+    });
   });
 });
