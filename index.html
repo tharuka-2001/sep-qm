@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        .registration-form {
+            background-color: rgb(58, 63, 75);
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .error-input {
+            border-color: rgb(255, 107, 107);
+        }
+
+        .error {
+            color: rgb(255, 107, 107);
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            display: none;
+            color: rgb(76, 175, 80);
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            background-color: rgba(76, 175, 80, 0.1);
+        }
+
+        [data-cy="submit-button"] {
+            background-color: rgb(97, 218, 251);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        [data-cy="submit-button"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <form class="registration-form">
+        <div class="form-group">
+            <input 
+                data-cy="username-input" 
+                type="text" 
+                placeholder="Username"
+            />
+            <div class="error">Username is required</div>
+        </div>
+        
+        <div class="form-group">
+            <input 
+                data-cy="email-input" 
+                type="email" 
+                placeholder="Email"
+            />
+        </div>
+        
+        <div class="form-group">
+            <input 
+                data-cy="password-input" 
+                type="password" 
+                placeholder="Password"
+            />
+        </div>
+        
+        <div class="form-group">
+            <input 
+                data-cy="confirm-password-input" 
+                type="password" 
+                placeholder="Confirm Password"
+            />
+        </div>
+        
+        <button 
+            data-cy="submit-button" 
+            type="submit"
+        >
+            Register
+        </button>
+
+        <div class="success-message">
+            Registration successful!
+        </div>
+    </form>
+
+    <script>
+        // Add error class to username input when typing
+        document.querySelector('[data-cy="username-input"]').addEventListener('input', function(e) {
+            if (e.target.value === 'admin') {
+                e.target.classList.add('error-input');
+                e.target.nextElementSibling.style.display = 'block';
+            } else {
+                e.target.classList.remove('error-input');
+                e.target.nextElementSibling.style.display = 'none';
+            }
+        });
+
+        // Show success message on form submit
+        document.querySelector('.registration-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            document.querySelector('.success-message').style.display = 'block';
+        });
+    </script>
+</body>
+</html> 
